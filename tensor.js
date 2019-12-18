@@ -2,7 +2,7 @@ let net;
 
 const webcamElement = document.getElementById("webcam");
 const classifier = knnClassifier.create();
-const _runner = new Runner('#runner');
+const _runner = new Runner("#runner");
 
 async function app() {
   console.log("Loading mobilenet..");
@@ -75,37 +75,48 @@ async function app() {
       `;
 
       if (prev_states != classes[result.label]) {
-        if (_runner.isRunning() && prev_states == 'Jump') {
-          _runner.tRex.endJump()
-        } else if (prev_states == 'Duck') {
+        if (_runner.isRunning() && prev_states == "Jump") {
+          _runner.tRex.endJump();
+        } else if (prev_states == "Duck") {
           _runner.tRex.speedDrop = false;
           _runner.tRex.setDuck(false);
         }
       }
 
       prev_states = classes[result.label];
-      if (!_runner.crashed && _runner.started && classes[result.label] == 'Jump') {
+      if (
+        !_runner.crashed &&
+        _runner.started &&
+        classes[result.label] == "Jump"
+      ) {
         if (!_runner.activated) {
           _runner.loadSounds();
-          _runner.activated = true
+          _runner.activated = true;
         }
         if (!_runner.tRex.jumping && !_runner.tRex.ducking) {
           _runner.playSound(_runner.soundFx.BUTTON_PRESS);
-          _runner.tRex.startJump(_runner.currentSpeed)
+          _runner.tRex.startJump(_runner.currentSpeed);
         }
       }
 
-      if (_runner.activated && !_runner.crashed && classes[result.label] == 'Duck') {
+      if (
+        _runner.activated &&
+        !_runner.crashed &&
+        classes[result.label] == "Duck"
+      ) {
         if (_runner.tRex.jumping) {
-          _runner.tRex.setSpeedDrop()
+          _runner.tRex.setSpeedDrop();
         } else if (!_runner.tRex.jumping && !_runner.tRex.ducking) {
-          _runner.tRex.setDuck(true)
+          _runner.tRex.setDuck(true);
         }
       }
 
-      document.getElementById("class-a").innerText = `Run : ${classifier.classExampleCount[0] || 0}`;
-      document.getElementById("class-b").innerText = `Jump : ${classifier.classExampleCount[1] || 0}`;
-      document.getElementById("class-c").innerText = `Duck : ${classifier.classExampleCount[2] || 0}`;
+      document.getElementById("class-a").innerText = `Run : ${classifier
+        .classExampleCount[0] || 0}`;
+      document.getElementById("class-b").innerText = `Jump : ${classifier
+        .classExampleCount[1] || 0}`;
+      document.getElementById("class-c").innerText = `Duck : ${classifier
+        .classExampleCount[2] || 0}`;
 
       // Dispose the tensor to release the memory.
       img.dispose();
@@ -118,8 +129,10 @@ async function app() {
 function startRunnerGame() {
   if (!_runner.activated) {
     _runner.loadSounds();
-    _runner.activated = true
-    _runner.tRex.startJump(_runner.currentSpeed)
+    _runner.activated = true;
+    _runner.tRex.startJump(_runner.currentSpeed);
+  } else if (_runner.activated && _runner.crashed) {
+    _runner.restart();
   }
 }
 
